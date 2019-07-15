@@ -5,6 +5,7 @@
 #ifndef ERR_EXPTAYLOR_H
 #define ERR_EXPTAYLOR_H
 
+//approssima exp(x) con taylor
 
 class expTaylor {
 private:

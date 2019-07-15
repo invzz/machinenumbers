@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+// calcola errore macchina eps
+
 class eps {
 public:
     float floatepsilon = 0;

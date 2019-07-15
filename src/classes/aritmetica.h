@@ -7,7 +7,7 @@
 
 #include <math.h> // pow
 
-//classe che dimostra la troncatura /approssimazione della somma
+//classe che dimostra la troncatura / approssimazione della somma
 //tra due numeri double distanti tra loro piu di 10^16
 
 class aritmetica {

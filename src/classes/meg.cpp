@@ -1,0 +1,94 @@
+//
+// Created by ac on 26/06/19.
+//
+
+#include "meg.h"
+#include <cmath> //abs
+#include <iostream> //cout
+#include <iomanip>
+
+using namespace std;
+
+meg::meg(matrix A, matrix b) {
+    matrix aux(A.getRows(),A.getCols()+1,0);
+    Ab = aux;
+    for(unsigned i=0; i<aux.getRows();i++) {
+        Ab.set(i, aux.getCols() - 1, b(i, 0));
+        for(unsigned j=0;j<A.getCols();j++)
+            Ab.set(i,j,A(i,j));
+    }
+    //matrice "Aumentata"
+    noEq = Ab.getRows();
+    redux();
+}
+
+void meg::redux() {
+
+    for (unsigned k=0; k<Ab.getRows(); k++)
+    {
+        
+        unsigned i_max = k;
+        float v_max = Ab(i_max,k);
+
+        
+        for (unsigned i = k+1; i < Ab.getRows(); i++)
+            if (fabs(Ab(i,k)) > v_max) {
+                v_max = Ab(i, k);
+                i_max = i;
+            }
+
+        /* se un elemento nella diagonale e` uguale a 0 la matrice e` singolare*/
+        if (Ab(k,i_max)==0)
+            return;
+
+        /* swap della row corrente con la row che ha il valore assoluto massimo */
+        if (i_max != k)
+            Ab.swap( k, i_max);
+
+
+        for (unsigned i=k+1; i<Ab.getRows(); i++)
+        {
+            float f = Ab(i,k)/Ab(k,k);
+            for (unsigned j=k+1; j<=Ab.getRows(); j++)
+                Ab.set(i,j,Ab(i,j) - Ab(k,j)*f);
+           
+//gli elementi sotto la diagonale valgono 0
+            Ab(i,k) = 0;
+        }
+    }
+}
+
+matrix meg::solution() {
+
+    matrix sol(Ab.getCols()-1,1);
+    for (int i = noEq - 1; i >= 0; i--) {
+        sol(i,0) = Ab(i,noEq);
+        //sostituzione all'indietro
+        for (unsigned j = i + 1; j <  noEq; j++)
+           sol.set(i,0,(sol(i,0) - Ab(i,j)*sol(j,0)));
+        sol.set(i,0,sol(i,0)/Ab(i,i));
+    }
+    return sol;
+}
+
+void meg::print() {
+    cout << ":: Matrice aumentata A|b ridotta con il metodo di eliminazione gaussiana ::" << endl << endl;
+
+    for (unsigned row = 0; row < Ab.getRows(); row++){
+        cout << "   [ ";
+        for (unsigned col = 0; col < Ab.getCols()-1; col++){
+            cout << setw(12)<<Ab(row,col) << ", ";
+            }
+        cout << setw(4)<< " | ";
+        cout << setw(12) << Ab(row,Ab.getCols()-1)<< " ]" << endl;
+        }
+
+    cout << endl;
+    cout << endl;
+
+    cout << ":: vettore x^t soluzione di Ax=b (utilizzando la sostituzione all'indietro) ::" << endl << endl;
+
+    solution().transpose().print();
+
+    cout << endl;
+}

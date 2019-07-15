@@ -42,6 +42,8 @@ void aritmetica::next() {
 }
 
 void aritmetica::print() {
+
+    /* verbose output
     cout << "   a0 := d0 + 1 = " << a0 << endl;
     cout << "  ap0 := a0^i = " << ap0 << endl;
     cout << "   b0 := d1 + 1 = " << b0 << endl;
@@ -51,6 +53,7 @@ void aritmetica::print() {
     cout << "    c := (-1)*b = " << c << endl;
     cout << "   f0 := a+b = " << f0 << endl;
     cout << "   f1 := b+c = " << f1 << endl;
+  */
     cout << ":: ya := f0+c = (a+b)+c = " << ya << endl;
     cout << ":: yb := a+f1 = a+(b+c) = " << yb << endl;
     cout << endl;
@@ -58,7 +61,7 @@ void aritmetica::print() {
         cout << ":: TEST:[ (a+b)+c == a+(b+c) ] OK" << endl;
         cout << endl;
     } else {
-        cout << ":: (a+b)+c != a+(b+c) somme tra numeri troppo distanti (piu` di 10^16)" << endl;
+        cout << ":: (a+b)+c != a+(b+c) SOMME TRA NUMERI TROPPO DISTANTI!" << endl;
         cout << endl;
     }
 

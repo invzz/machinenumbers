@@ -1,0 +1,220 @@
+//
+// Created by ac mat 2761046 on 25/06/19.
+//
+
+#include "matrix.h"
+#include <cmath>        //abs
+#include <iostream>     //cout
+#include <iomanip>      //decimals for matrix visualiz.4
+
+using namespace std;
+
+unsigned matrix::comb(unsigned n, unsigned k) {
+    if (k == 0) return 1;
+//quoziente sempre intero! metodo moltiplicativo, versione ricorsiva: corta ed elegante.
+    return (n * comb(n - 1, k - 1)) / k;
+}
+
+void matrix::resize() {
+    m.resize(this->rowNum);
+    for (unsigned row = 0; row < this->rowNum; row++) {
+        m[row].resize(this->colNum);
+    }
+}
+
+void matrix::reset(float val) {
+    for (unsigned row = 0; row < this->rowNum; row++) {
+        for (unsigned col = 0; col < this->colNum; col++) {
+            m[row][col] = val;
+        }
+    }
+}
+
+matrix matrix::transpose() {
+
+    matrix t(this->colNum,this->rowNum);
+
+    for(unsigned row=0;row < rowNum;row++){
+        for(unsigned col=0; col < this->colNum; col++){
+            t.set(col,row,get(row,col));
+        }
+    }
+    return t;
+}
+
+void matrix::pascal(unsigned n) {
+    this->rowNum = n;
+    this->colNum = n;
+    resize();
+    reset(0);
+    for (unsigned row = 0; row < this->rowNum; row++) {
+        for (unsigned col = 0; col < this->colNum; col++) {
+            unsigned nu = row+col;
+            unsigned k = row;
+            //righe e colonne sono  "spostate" di 1 m[0,0] -> m[1,1]
+            set(row,col,comb(nu,k));
+        }
+    }
+}
+
+void matrix::tridiag(unsigned n) {
+    this->rowNum = n;
+    this->colNum = n;
+    resize();
+    reset(0);
+    for (unsigned row = 0; row < this->rowNum; row++) {
+        for (unsigned col = 0; col < this->colNum; col++) {
+            if (row==col){
+                set(row,col,2);
+            }
+            else if (abs((int)row+1-(int)col+1)==1)
+                set(row,col,-1);
+        }
+    }
+}
+
+matrix::matrix(unsigned row, unsigned col) {
+    rowNum = row;
+    colNum = col;
+    resize();
+    reset(0);
+}
+
+matrix::matrix(unsigned row, unsigned col, float val) {
+    rowNum = row;
+    colNum = col;
+    resize();
+    reset(val);
+}
+
+void matrix::set(unsigned row, unsigned col, float val) {
+    m[row][col] = val;
+}
+
+float matrix::get(unsigned row, unsigned col) {
+    return m[row][col];
+}
+
+void matrix::print() {
+    for (unsigned row = 0; row < this->rowNum; row++){
+        cout << "   [ ";
+
+        for (unsigned col = 0; col < this->colNum-1; col++){
+            cout << setw(12) <<right << get(row,col) << ", ";
+        }
+        cout <<  setw(12) << right <<get(row,colNum-1);
+        cout << " ]"<< endl;
+    }
+    cout << endl;
+}
+
+void matrix::print(unsigned precision) {
+    for (unsigned row = 0; row < this->rowNum; row++){
+        cout << "   [ ";
+        for (unsigned col = 0; col < this->colNum-1; col++){
+            cout << setprecision(precision) << get(row,col) << ", ";
+        }
+        cout << get(row,colNum-1);
+        cout << " ]"<< endl;
+    }
+    cout << endl;
+}
+
+
+float matrix::norm() {
+    float norm = 0;
+    float rowsum = 0;
+    for (unsigned row = 0; row < this->rowNum; row++) {
+        rowsum = 0;
+        for (unsigned col = 0; col < this->colNum; col++) {
+            rowsum += fabs(get(row,col));
+        }
+        if (rowsum > norm)
+            norm = rowsum ;
+    }
+    cout << ":: La norma infinito vale [ " << norm <<  "]" <<endl;
+    return norm;
+}
+
+matrix::matrix(const vector<vector<float>> &m) : m(m) {
+    this->rowNum=m.size();
+    this->colNum=m[1].size();
+}
+
+matrix::matrix(const matrix &B) {
+    colNum = B.getCols();
+    rowNum = B.getRows();
+    m = B.m;
+}
+
+float &matrix::operator()(const unsigned &row, const unsigned &col) {
+    return m[row][col];
+}
+
+matrix matrix::operator*(matrix &B) {
+    matrix prod(this->rowNum, B.getCols(),0);
+    if(this->colNum == B.getRows())
+    {
+        float temp = 0 ;
+        for (unsigned i = 0; i < this->rowNum; i++)
+        {
+            for (unsigned j = 0; j < B.getCols(); j++)
+            {
+                temp = 0;
+                for (unsigned k = 0; k < this->colNum; k++)
+                {
+                    temp += m[i][k] * B.get(k,j);
+                }
+                prod.set(i,j,temp);
+                //cout <<"[DEBUG-PROD] :: "<< i <<","<< j<< " = " << prod(i,j) << endl;
+            }
+        }
+        return prod;
+    }
+    else
+    {
+        cout << "Errore: matrici incompatibili"<<endl;
+        return prod;
+    }
+    return prod;
+}
+
+void matrix::swap(unsigned row1, unsigned row2) {
+    matrix aux(1,colNum,0);
+    for(unsigned i = 0;i < colNum;i++) {
+        aux.set(0, i, m[row1][i]);
+        m[row1][i] = m[row2][i];
+    }
+    for(unsigned i = 0;i < colNum;i++) {
+        m[row2][i] = aux(0,i);
+    }
+}
+//molt. scalare
+
+matrix matrix::operator*(float scalar){
+        matrix result(rowNum,colNum,0.0);
+        unsigned i,j;
+        for (i = 0; i < rowNum; i++)
+        {
+            for (j = 0; j < colNum; j++)
+            {
+                result(i,j) = this->m[i][j] * scalar;
+            }
+        }
+        return result;
+    }
+
+//somma matriciale
+
+matrix matrix::operator+(matrix &B){
+    matrix sum(rowNum, colNum, 0.0);
+    unsigned i,j;
+    for (i = 0; i < rowNum; i++)
+    {
+        for (j = 0; j < colNum; j++)
+        {
+            sum(i,j) = this->m[i][j] + B(i,j);
+        }
+    }
+    return sum;
+}

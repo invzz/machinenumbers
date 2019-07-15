@@ -4,9 +4,7 @@ Andres Coronado MAT 2761046
 ## Compilazione:
 
 basta digitare make nella shell, si creera` un eseguibile "err" nella direcory ./bin ed un symlink nella direcory ./
-
 ```sh
-
 make
 
 ```
@@ -27,5 +25,4 @@ oppure:
 ./bin/err 
 
 ```
-
 

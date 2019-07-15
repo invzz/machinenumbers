@@ -62,7 +62,7 @@ void testMatrix(matrix A){
     matrix db(b.getRows(),b.getCols());
 
     //costruisco vettore {0.01,-0.01,...,0.01};
-    for(unsigned i = 1;i<=db.getRows();i++ ){
+    for(int i = 1;i<=db.getRows();i++ ){
         db.set(i-1,0, pow(-1,i) * (0.01 * bnorm));
     }
 
